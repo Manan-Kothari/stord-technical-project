@@ -1,0 +1,64 @@
+image:
+  repository: ghcr.io/stordco/sre-technical-challenge
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+terminationGracePeriodSeconds: 10
+
+secretKeyBase: GWks+00R99rp4iCigXEDAP7WRQXFiTImOP0vIUmFyaNj1DGDXsMvEfSXtb7ITMKC
+
+env: |
+  - name: DATABASE_URL
+    value: "postgresql://postgres:password@sre-db-postgresql/sre-technical-challenge"
+  - name: POOL_SIZE
+    value: "10"
+  - name: PHX_HOST
+    value: "localhost"
+  - name: SECRET_KEY_BASE
+    valueFrom:
+      secretKeyRef:
+        name: {{ include "sre-technical-challenge.fullname" . }}-secret
+        key: SECRET_KEY_BASE
+
+# Additional environment variables as a template string
+# Example:
+# additionalEnvs: |
+#   - name: VARIABLE_NAME
+#     value: "custom-value"
+#   - name: ANOTHER_VARIABLE_NAME
+#     value: "custom-value-2"
+additionalEnvs: ""
+
+service:
+  type: ClusterIP
+  ports:
+    http: 80
+    api: 4000
+
+resources:
+  limits:
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+livenessProbe:
+  httpGet:
+    path: /_health
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /_health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
