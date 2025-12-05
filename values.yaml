@@ -9,6 +9,7 @@ terminationGracePeriodSeconds: 10
 
 secretKeyBase: GWks+00R99rp4iCigXEDAP7WRQXFiTImOP0vIUmFyaNj1DGDXsMvEfSXtb7ITMKC
 
+# Add any additional environment variables here as key value pairs
 env: |
   - name: DATABASE_URL
     value: "postgresql://postgres:password@sre-db-postgresql/sre-technical-challenge"
@@ -21,15 +22,6 @@ env: |
       secretKeyRef:
         name: {{ include "sre-technical-challenge.fullname" . }}-secret
         key: SECRET_KEY_BASE
-
-# Additional environment variables as a template string
-# Example:
-# additionalEnvs: |
-#   - name: VARIABLE_NAME
-#     value: "custom-value"
-#   - name: ANOTHER_VARIABLE_NAME
-#     value: "custom-value-2"
-additionalEnvs: ""
 
 service:
   type: ClusterIP
